@@ -1,2 +1,4 @@
 github.com/bendahl/uinput v1.4.0 h1:aVJhayM1wEv7yXXLvC/fbXMmA1uB+jAspKhXQaV+76U=
 github.com/bendahl/uinput v1.4.0/go.mod h1:Np7w3DINc9wB83p12fTAM3DPPhFnAKP0WTXRqCQJ6Z8=
+github.com/gvalkov/golang-evdev v0.0.0-20191114124502-287e62b94bcb h1:WHSAxLz3P5t4DKukfJ5wu7+aMyVkuTNSbCiAjVS92sM=
+github.com/gvalkov/golang-evdev v0.0.0-20191114124502-287e62b94bcb/go.mod h1:SAzVFKCRezozJTGavF3GX8MBUruETCqzivVLYiywouA=
