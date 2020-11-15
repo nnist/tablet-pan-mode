@@ -4,55 +4,9 @@ import (
 	"fmt"
 	"github.com/bendahl/uinput"
 	evdev "github.com/gvalkov/golang-evdev"
+	"github.com/nnist/tablet-pan-mode/events"
 	"strings"
 )
-
-// eventCodeInEvents checks whether a given code is in a list of input events.
-func eventCodeInEvents(code uint16, events []evdev.InputEvent) bool {
-	for _, e := range events {
-		if e.Code == code {
-			return true
-		}
-	}
-	return false
-}
-
-// watchDeviceForEventCode watches a device for a given event code and returns
-// true on a channel if the event is triggered.
-func watchDeviceForEventCode(c chan bool, dev *evdev.InputDevice, code uint16) {
-	for {
-		events, err := dev.Read()
-		if err != nil {
-			fmt.Println(err)
-			panic("Could not read device events.")
-		}
-		if eventCodeInEvents(code, events) {
-			c <- true
-		} else {
-			c <- false
-		}
-	}
-}
-
-// watchPenInRange returns true when the pen is in range of the tablet.
-func watchPenInRange(c chan bool, dev *evdev.InputDevice) {
-	for {
-		events, err := dev.Read()
-		if err != nil {
-			fmt.Println(err)
-			panic("Could not read device events.")
-		}
-		for _, e := range events {
-			if e.Code == evdev.ABS_DISTANCE {
-				if e.Value != 0 {
-					c <- true
-				} else {
-					c <- false
-				}
-			}
-		}
-	}
-}
 
 func main() {
 	keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("testkeyboard"))
@@ -97,8 +51,8 @@ func main() {
 	penChan := make(chan bool)
 	kbdChan := make(chan bool)
 
-	go watchPenInRange(penChan, pen)
-	go watchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
+	go events.WatchPenInRange(penChan, pen)
+	go events.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
 
 	for {
 		key_active = <-kbdChan
