@@ -48,15 +48,26 @@ func main() {
 	var pen_active bool
 	var key_active bool
 
-	penChan := make(chan bool)
+	penChan := make(chan events.PenDevice)
 	kbdChan := make(chan bool)
 
-	go events.WatchPenInRange(penChan, pen)
+	go events.WatchPen(penChan, pen)
 	go events.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
 
 	for {
-		key_active = <-kbdChan
-		pen_active = <-penChan
+		select {
+		case key_active = <-kbdChan:
+			fmt.Println("key: ", key_active)
+		default:
+		}
+		select {
+		case penDev := <-penChan:
+			if penDev.InRange {
+				pen_active = true
+				fmt.Println("pen:", penDev.X, penDev.Y)
+			}
+		default:
+		}
 		if pen_active && key_active {
 			fmt.Println("Button pressed and pen is in range!")
 		}

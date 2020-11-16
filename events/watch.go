@@ -32,22 +32,41 @@ func WatchDeviceForEventCode(c chan bool, dev *evdev.InputDevice, code uint16) {
 	}
 }
 
-// watchPenInRange returns true when the pen is in range of the tablet.
-func WatchPenInRange(c chan bool, dev *evdev.InputDevice) {
+// PenDevice contains the position and range status of a pen device.
+type PenDevice struct {
+	X       int32
+	Y       int32
+	InRange bool
+}
+
+// watchPen returns the position and range of a pen device.
+func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
+	var x int32
+	var y int32
+	var inRange bool
+
 	for {
 		events, err := dev.Read()
 		if err != nil {
 			fmt.Println(err)
 			panic("Could not read device events.")
 		}
+
 		for _, e := range events {
-			if e.Code == evdev.ABS_DISTANCE {
-				if e.Value != 0 {
-					c <- true
-				} else {
-					c <- false
+			if e.Type == evdev.EV_ABS {
+				if e.Code == evdev.ABS_DISTANCE {
+					if e.Value != 0 {
+						inRange = true
+					} else {
+						inRange = false
+					}
+				} else if e.Code == evdev.ABS_X {
+					x = e.Value
+				} else if e.Code == evdev.ABS_Y {
+					y = e.Value
 				}
 			}
 		}
+		c <- PenDevice{x, y, inRange}
 	}
 }
