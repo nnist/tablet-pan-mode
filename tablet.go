@@ -45,7 +45,7 @@ func main() {
 		panic("Could not open keyboard device.")
 	}
 
-	var pen_active bool
+	var penDev events.PenDevice
 	var key_active bool
 
 	penChan := make(chan events.PenDevice)
@@ -60,16 +60,15 @@ func main() {
 			fmt.Println("key: ", key_active)
 		default:
 		}
+
 		select {
-		case penDev := <-penChan:
-			if penDev.InRange {
-				pen_active = true
-				fmt.Println("pen:", penDev.X, penDev.Y)
-			}
+		case penDev = <-penChan:
 		default:
 		}
-		if pen_active && key_active {
+
+		if penDev.Active && key_active {
 			fmt.Println("Button pressed and pen is in range!")
+			fmt.Println("pen:", penDev.X, penDev.Y)
 		}
 	}
 }

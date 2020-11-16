@@ -34,16 +34,16 @@ func WatchDeviceForEventCode(c chan bool, dev *evdev.InputDevice, code uint16) {
 
 // PenDevice contains the position and range status of a pen device.
 type PenDevice struct {
-	X       int32
-	Y       int32
-	InRange bool
+	X      int32
+	Y      int32
+	Active bool
 }
 
 // watchPen returns the position and range of a pen device.
 func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
 	var x int32
 	var y int32
-	var inRange bool
+	var active bool
 
 	for {
 		events, err := dev.Read()
@@ -56,9 +56,9 @@ func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
 			if e.Type == evdev.EV_ABS {
 				if e.Code == evdev.ABS_DISTANCE {
 					if e.Value != 0 {
-						inRange = true
+						active = true
 					} else {
-						inRange = false
+						active = false
 					}
 				} else if e.Code == evdev.ABS_X {
 					x = e.Value
@@ -67,6 +67,6 @@ func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
 				}
 			}
 		}
-		c <- PenDevice{x, y, inRange}
+		c <- PenDevice{x, y, active}
 	}
 }
