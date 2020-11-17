@@ -49,10 +49,9 @@ func main() {
 	var penDev events.PenDevice
 	var key_active bool
 
-	penChan := make(chan events.PenDevice)
 	kbdChan := make(chan bool)
 
-	go events.WatchPen(penChan, pen)
+	go events.WatchPen(&penDev, pen)
 	go events.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
 
 	ticker := time.NewTicker(time.Millisecond * 25)
@@ -62,11 +61,6 @@ func main() {
 		select {
 		case key_active = <-kbdChan:
 			fmt.Println("key: ", key_active)
-		default:
-		}
-
-		select {
-		case penDev = <-penChan:
 		default:
 		}
 

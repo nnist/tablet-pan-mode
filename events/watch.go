@@ -44,11 +44,7 @@ type PenDevice struct {
 }
 
 // watchPen returns the position and range of a pen device.
-func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
-	var x int32
-	var y int32
-	var active bool
-
+func WatchPen(pen *PenDevice, dev *evdev.InputDevice) {
 	ticker := time.NewTicker(time.Millisecond * 50)
 	defer ticker.Stop()
 
@@ -63,17 +59,17 @@ func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
 			if e.Type == evdev.EV_ABS {
 				if e.Code == evdev.ABS_DISTANCE {
 					if e.Value != 0 {
-						active = true
+						pen.Active = true
 					} else {
-						active = false
+						pen.Active = false
 					}
 				} else if e.Code == evdev.ABS_X {
-					x = e.Value
+					pen.X = e.Value
 				} else if e.Code == evdev.ABS_Y {
-					y = e.Value
+					pen.Y = e.Value
 				}
 			}
 		}
-		c <- PenDevice{x, y, active}
+
 	}
 }
