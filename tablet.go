@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bendahl/uinput"
 	evdev "github.com/gvalkov/golang-evdev"
+	"github.com/nnist/tablet-pan-mode/devices"
 	"github.com/nnist/tablet-pan-mode/events"
 	"strings"
 	"time"
@@ -23,12 +24,12 @@ func main() {
 	defer mouse.Close()
 
 	device_glob := "/dev/input/event*"
-	devices, _ := evdev.ListInputDevices(device_glob)
+	evdevDevices, _ := evdev.ListInputDevices(device_glob)
 
 	var pen *evdev.InputDevice = nil
 	var kbd *evdev.InputDevice = nil
 
-	for _, dev := range devices {
+	for _, dev := range evdevDevices {
 		if strings.Contains(dev.Name, "Wacom") && strings.Contains(dev.Name, "Pen") {
 			pen = dev
 		}
@@ -46,12 +47,12 @@ func main() {
 		panic("Could not open keyboard device.")
 	}
 
-	var penDev events.PenDevice
+	var penDev devices.PenDevice
 	var key_active bool
 
 	kbdChan := make(chan bool)
 
-	go events.WatchPen(&penDev, pen)
+	go devices.WatchPen(&penDev, pen)
 	go events.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
 
 	ticker := time.NewTicker(time.Millisecond * 25)
