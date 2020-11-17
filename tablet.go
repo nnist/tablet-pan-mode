@@ -5,7 +5,6 @@ import (
 	"github.com/bendahl/uinput"
 	evdev "github.com/gvalkov/golang-evdev"
 	"github.com/nnist/tablet-pan-mode/devices"
-	"github.com/nnist/tablet-pan-mode/events"
 	"strings"
 	"time"
 )
@@ -53,7 +52,7 @@ func main() {
 	kbdChan := make(chan bool)
 
 	go devices.WatchPen(&penDev, pen)
-	go events.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
+	go devices.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
 
 	ticker := time.NewTicker(time.Millisecond * 25)
 	defer ticker.Stop()
