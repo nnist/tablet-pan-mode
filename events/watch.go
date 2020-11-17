@@ -3,6 +3,7 @@ package events
 import (
 	"fmt"
 	evdev "github.com/gvalkov/golang-evdev"
+	"time"
 )
 
 // eventCodeInEvents checks whether a given code is in a list of input events.
@@ -18,7 +19,10 @@ func eventCodeInEvents(code uint16, events []evdev.InputEvent) bool {
 // watchDeviceForEventCode watches a device for a given event code and returns
 // true on a channel if the event is triggered.
 func WatchDeviceForEventCode(c chan bool, dev *evdev.InputDevice, code uint16) {
-	for {
+	ticker := time.NewTicker(time.Millisecond * 50)
+	defer ticker.Stop()
+
+	for range ticker.C {
 		events, err := dev.Read()
 		if err != nil {
 			fmt.Println(err)
@@ -45,7 +49,10 @@ func WatchPen(c chan PenDevice, dev *evdev.InputDevice) {
 	var y int32
 	var active bool
 
-	for {
+	ticker := time.NewTicker(time.Millisecond * 50)
+	defer ticker.Stop()
+
+	for range ticker.C {
 		events, err := dev.Read()
 		if err != nil {
 			fmt.Println(err)

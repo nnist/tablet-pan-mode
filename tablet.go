@@ -6,6 +6,7 @@ import (
 	evdev "github.com/gvalkov/golang-evdev"
 	"github.com/nnist/tablet-pan-mode/events"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -54,7 +55,10 @@ func main() {
 	go events.WatchPen(penChan, pen)
 	go events.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
 
-	for {
+	ticker := time.NewTicker(time.Millisecond * 25)
+	defer ticker.Stop()
+
+	for range ticker.C {
 		select {
 		case key_active = <-kbdChan:
 			fmt.Println("key: ", key_active)
@@ -70,5 +74,6 @@ func main() {
 			fmt.Println("Button pressed and pen is in range!")
 			fmt.Println("pen:", penDev.X, penDev.Y)
 		}
+
 	}
 }
