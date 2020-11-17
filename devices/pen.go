@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-// PenDevice contains the position and range status of a pen device.
-type PenDevice struct {
+// Pen contains the position and range status of a pen device.
+type Pen struct {
 	X      int32
 	Y      int32
 	Active bool
 }
 
 // watchPen returns the position and range of a pen device.
-func WatchPen(pen *PenDevice, dev *evdev.InputDevice) {
+func WatchPen(pen *Pen, dev *evdev.InputDevice) {
 	ticker := time.NewTicker(time.Millisecond * 50)
 	defer ticker.Stop()
 

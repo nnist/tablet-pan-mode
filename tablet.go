@@ -46,7 +46,7 @@ func main() {
 		panic("Could not open keyboard device.")
 	}
 
-	var penDev devices.PenDevice
+	var penDev devices.Pen
 	var key_active bool
 
 	kbdChan := make(chan bool)
