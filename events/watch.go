@@ -57,15 +57,16 @@ func WatchPen(pen *PenDevice, dev *evdev.InputDevice) {
 
 		for _, e := range events {
 			if e.Type == evdev.EV_ABS {
-				if e.Code == evdev.ABS_DISTANCE {
+				switch code := e.Code; code {
+				case evdev.ABS_DISTANCE:
 					if e.Value != 0 {
 						pen.Active = true
 					} else {
 						pen.Active = false
 					}
-				} else if e.Code == evdev.ABS_X {
+				case evdev.ABS_X:
 					pen.X = e.Value
-				} else if e.Code == evdev.ABS_Y {
+				case evdev.ABS_Y:
 					pen.Y = e.Value
 				}
 			}
