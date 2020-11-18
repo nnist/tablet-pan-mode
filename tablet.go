@@ -57,7 +57,6 @@ func main() {
 
 	for range ticker.C {
 		if penDev.Active && kbdDev.Active {
-			fmt.Println("Button pressed and pen is in range!")
 			fmt.Println("pen:", penDev.X, penDev.Y)
 		}
 
