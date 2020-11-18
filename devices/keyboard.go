@@ -3,7 +3,6 @@ package devices
 import (
 	"fmt"
 	evdev "github.com/gvalkov/golang-evdev"
-	"time"
 )
 
 type Keyboard struct {
@@ -23,10 +22,7 @@ func eventCodeInEvents(code uint16, events []evdev.InputEvent) bool {
 // WatchKeyboard watches a keyboard for a given event code and returns a struct
 // containing its status.
 func WatchKeyboard(keyboard *Keyboard, dev *evdev.InputDevice, code uint16) {
-	ticker := time.NewTicker(time.Millisecond * 50)
-	defer ticker.Stop()
-
-	for range ticker.C {
+	for {
 		events, err := dev.Read()
 		if err != nil {
 			fmt.Println(err)
