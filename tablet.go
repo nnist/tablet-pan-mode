@@ -47,24 +47,16 @@ func main() {
 	}
 
 	var penDev devices.Pen
-	var key_active bool
-
-	kbdChan := make(chan bool)
+	var kbdDev devices.Keyboard
 
 	go devices.WatchPen(&penDev, pen)
-	go devices.WatchDeviceForEventCode(kbdChan, kbd, evdev.KEY_CAPSLOCK)
+	go devices.WatchKeyboard(&kbdDev, kbd, evdev.KEY_CAPSLOCK)
 
 	ticker := time.NewTicker(time.Millisecond * 25)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		select {
-		case key_active = <-kbdChan:
-			fmt.Println("key: ", key_active)
-		default:
-		}
-
-		if penDev.Active && key_active {
+		if penDev.Active && kbdDev.Active {
 			fmt.Println("Button pressed and pen is in range!")
 			fmt.Println("pen:", penDev.X, penDev.Y)
 		}

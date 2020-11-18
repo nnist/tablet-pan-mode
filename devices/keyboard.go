@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type Keyboard struct {
+	Active bool
+}
+
 // eventCodeInEvents checks whether a given code is in a list of input events.
 func eventCodeInEvents(code uint16, events []evdev.InputEvent) bool {
 	for _, e := range events {
@@ -16,9 +20,9 @@ func eventCodeInEvents(code uint16, events []evdev.InputEvent) bool {
 	return false
 }
 
-// watchDeviceForEventCode watches a device for a given event code and returns
-// true on a channel if the event is triggered.
-func WatchDeviceForEventCode(c chan bool, dev *evdev.InputDevice, code uint16) {
+// WatchKeyboard watches a keyboard for a given event code and returns a struct
+// containing its status.
+func WatchKeyboard(keyboard *Keyboard, dev *evdev.InputDevice, code uint16) {
 	ticker := time.NewTicker(time.Millisecond * 50)
 	defer ticker.Stop()
 
@@ -26,12 +30,12 @@ func WatchDeviceForEventCode(c chan bool, dev *evdev.InputDevice, code uint16) {
 		events, err := dev.Read()
 		if err != nil {
 			fmt.Println(err)
-			panic("Could not read device events.")
+			panic("Could not read keyboard events.")
 		}
 		if eventCodeInEvents(code, events) {
-			c <- true
+			keyboard.Active = true
 		} else {
-			c <- false
+			keyboard.Active = false
 		}
 	}
 }
