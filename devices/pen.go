@@ -10,6 +10,10 @@ import (
 type Pen struct {
 	X      int32
 	Y      int32
+	DiffX  int32
+	DiffY  int32
+	lastX  int32
+	lastY  int32
 	Active bool
 }
 
@@ -36,8 +40,12 @@ func WatchPen(pen *Pen, dev *evdev.InputDevice) {
 					}
 				case evdev.ABS_X:
 					pen.X = e.Value
+					pen.DiffX = e.Value - pen.lastX
+					pen.lastX = e.Value
 				case evdev.ABS_Y:
 					pen.Y = e.Value
+					pen.DiffY = e.Value - pen.lastY
+					pen.lastY = e.Value
 				}
 			}
 		}

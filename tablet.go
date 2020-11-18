@@ -57,7 +57,7 @@ func main() {
 
 	for range ticker.C {
 		if penDev.Active && kbdDev.Active {
-			fmt.Println("pen:", penDev.X, penDev.Y)
+			fmt.Println("pen:", penDev.DiffX, penDev.DiffY)
 		}
 
 	}
